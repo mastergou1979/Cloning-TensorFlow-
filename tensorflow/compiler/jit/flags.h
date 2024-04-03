@@ -295,6 +295,8 @@ struct MlirCommonFlags {
   // TODO(pineapplejuice233): Revisit this flag once the performance impact is verified
   // with different local CPU devices settings.
   bool tf_mlir_enable_multiple_local_cpu_devices;
+  // If true, enable TF2/Min ICI weight optimization.
+  bool tf_mlir_enable_tf2min_ici_weight;
 };
 
 // Flags for the JitRt pipeline -- see tf_jitrt_pipeline.h for details.

@@ -1188,6 +1188,7 @@ cc_library(
     copts = tf_copts(),
     deps = [
         ":optimization_registry",
+        "//tensorflow/compiler/jit:flags",
         "//tensorflow/core:core_cpu_base",
         "//tensorflow/core:framework",
         "//tensorflow/core:portable_gif_internal",

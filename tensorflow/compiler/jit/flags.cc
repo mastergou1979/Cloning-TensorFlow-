@@ -289,6 +289,9 @@ void AllocateAndParseFlags() {
   bool use_tfg_graph_dumper = false;
   bool enable_mlir_generic_outside_compilation = false;
   bool enable_tpu_variable_runtime_reformatting_pass = true;
+  // TODO(b/331245915): Fix the regression issue then set true for the default
+  // value.
+  bool enable_tf2min_ici_weight = false;
 
   flag_list = new std::vector<Flag>(
       {Flag("tf_xla_enable_lazy_compilation",
@@ -399,7 +402,10 @@ void AllocateAndParseFlags() {
             &enable_tpu_variable_runtime_reformatting_pass,
             "Enables TPUVariableRuntimeReformatting pass for MLIR-Based "
             "TensorFlow Compiler Bridge. This enables weight update sharding "
-            "and creates TPUReshardVariables ops.")});
+            "and creates TPUReshardVariables ops."),
+       Flag("tf_mlir_enable_tf2min_ici_weight", &enable_tf2min_ici_weight,
+            "Enables TF2Min ICI weight optimization for MLIR-Based TensorFlow "
+            "Compiler Bridge.")});
 
   AppendMarkForCompilationPassFlagsInternal(flag_list);
   xla::ParseFlagsFromEnvAndDieIfUnknown("TF_XLA_FLAGS", *flag_list);
@@ -428,6 +434,7 @@ void AllocateAndParseFlags() {
       enable_tpu_variable_runtime_reformatting_pass;
   mlir_flags->tf_mlir_enable_multiple_local_cpu_devices =
       enable_mlir_multiple_local_cpu_devices;
+  mlir_flags->tf_mlir_enable_tf2min_ici_weight = enable_tf2min_ici_weight;
 
   if (use_tfg_graph_dumper) {
     UseMlirForGraphDump(MlirDumpConfig{}.elide_large_attributes().emit_dialect(

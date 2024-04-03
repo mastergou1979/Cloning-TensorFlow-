@@ -25,6 +25,7 @@ limitations under the License.
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
+#include "tensorflow/compiler/jit/flags.h"
 #include "xla/tsl/util/device_name_utils.h"
 #include "tensorflow/core/common_runtime/optimization_registry.h"
 #include "tensorflow/core/framework/node_def_util.h"
@@ -168,6 +169,10 @@ void PropagateColocationInfo(Node* root_node,
 
 Status ColocatePredecessorTreesPass::Run(
     const GraphOptimizationPassOptions& options) {
+  if (!tensorflow::GetMlirCommonFlags()->tf_mlir_enable_tf2min_ici_weight) {
+    VLOG(1) << "TF2/Min ICI weight is disabled.";
+    return absl::OkStatus();
+  }
   // find all potential node.
   if (options.graph == nullptr) {
     VLOG(1) << "No graph in colocate_predecessor_trees_pass.\n";
@@ -201,8 +206,7 @@ Status ColocatePredecessorTreesPass::Run(
   return absl::OkStatus();
 }
 
-// TODO(b/331245915): Fix the regression issue then register the pass again.
-// REGISTER_OPTIMIZATION(OptimizationPassRegistry::PRE_PLACEMENT, 50,
-//                       ColocatePredecessorTreesPass);
+REGISTER_OPTIMIZATION(OptimizationPassRegistry::PRE_PLACEMENT, 50,
+                      ColocatePredecessorTreesPass);
 
 }  // namespace tensorflow

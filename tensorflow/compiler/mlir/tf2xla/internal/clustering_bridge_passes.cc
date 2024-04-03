@@ -144,10 +144,14 @@ void AddReplicatedBridgeClusteringPipelinePasses(OpPassManager& pm,
 
   pm.addNestedPass<FuncOp>(mlir::TFDevice::CreateClusterConstantSinkingPass());
   pm.addPass(mlir::TF::CreateResourceDeviceInferencePass());
-  pm.addNestedPass<FuncOp>(
-      tensorflow::tf2xla::internal::CreateHoistBroadcastReadPass());
-  pm.addNestedPass<FuncOp>(
-      tensorflow::tf2xla::internal::CreateXlaBroadcastPass());
+
+  if (tensorflow::GetMlirCommonFlags()->tf_mlir_enable_tf2min_ici_weight) {
+    pm.addNestedPass<FuncOp>(
+        tensorflow::tf2xla::internal::CreateHoistBroadcastReadPass());
+    pm.addNestedPass<FuncOp>(
+        tensorflow::tf2xla::internal::CreateXlaBroadcastPass());
+  }
+
   pm.addPass(mlir::TFDevice::CreateClusterOutliningPass());
   pm.addPass(mlir::TFTPU::CreateTPUResourceReadForWritePass());
   pm.addPass(mlir::TFDevice::CreateMarkInputOutputAliasesPass());
